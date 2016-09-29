@@ -30,6 +30,7 @@ public:
     static void setWorkDir(const QDir &value);
 
 signals:
+    void tryGoBack();
     void finished(bool);
 protected slots:
     void saveChangesAndGoNext();

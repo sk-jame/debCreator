@@ -17,6 +17,7 @@ private:
     QTextEdit* teChangeLog;
     QLabel* label;
     QPushButton* pbNext;
+    QPushButton* pbBack;
     QPushButton *pbExit;
 public:
     explicit ChangelogSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);

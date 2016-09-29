@@ -53,7 +53,7 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
     lay->addWidget(descriptionLong,  8, 1, 3, 2 );
 
 
-    lay->addWidget(pbNext, 11, 2, 1, 1);
+    lay->addWidget(pbNext, 11, 3, 1, 1);
     lay->addWidget(pbExit, 11, 1, 1, 1);
 
     // настройка комбо боксов
@@ -75,6 +75,13 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
         arch->addItems( archList );
         arch->setCurrentIndex( archList.indexOf("armhf") );
     }
+
+    pbBack = new QPushButton(tr("Назад"),this);
+    pbBack->setShortcut(QKeySequence("ALT+B"));
+    lay->addWidget(pbBack, 11, 2, 1, 1 );
+
+    connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
+
 
     connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
     connect( pbExit, SIGNAL(clicked()), this, SLOT(exitClicked()));

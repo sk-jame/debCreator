@@ -41,14 +41,22 @@ ScriptSettingsWidget::ScriptSettingsWidget(QDir workDir, QWidget *parent) : DebS
 
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
+    pbBack = new QPushButton(tr("Назад"),this);
+    pbBack->setShortcut(QKeySequence("ALT+B"));
     pbExit = new QPushButton(tr("Выход"),this);
     QHBoxLayout* tempLay = new QHBoxLayout;
     tempLay->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Expanding));
     tempLay->addWidget(pbExit);
     tempLay->addSpacing(5);
+    tempLay->addWidget(pbBack);
+    tempLay->addSpacing(5);
     tempLay->addWidget(pbNext);
 
     lay->addItem( tempLay );
+
+
+    connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
+
 
     connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
     connect( pbExit, SIGNAL(clicked()), this, SLOT(exitClicked()));

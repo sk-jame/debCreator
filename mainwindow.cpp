@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         }
         connect( settingsWidgets.last(), SIGNAL(finished(bool)),
                  this, SLOT(settingsWidgetFinished(bool)));
+        connect( settingsWidgets.last(), SIGNAL(tryGoBack()),
+                 this, SLOT(settingsWidgetGoBack()));
     }
 
     process = new QProcess(this);
@@ -197,8 +199,10 @@ void MainWindow::okOpenClicked(){
             return;
     }
 
-    startWidget->close();
+    startWidget->hide();
+    startWidget->setParent(0);
     settingsWidgets.first()->setWorkDir(workDir);
+    settingsWidgets.first()->setParent(this);
     this->setCentralWidget(settingsWidgets.first());
 }
 
@@ -219,15 +223,17 @@ void MainWindow::openClicked(){
  */
 void MainWindow::settingsWidgetFinished(bool shouldContinue){
     DebSettingsCommon* debWidget = qobject_cast<DebSettingsCommon*>(sender());
-    debWidget->close();
+    debWidget->hide();
     if ( shouldContinue == false ){
         this->close();
         return;
     }
+    debWidget->setParent(0);//now it is saved
     int index = settingsWidgets.indexOf(debWidget);
     // если дальше есть ещё виджеты - показываем их
     if ( ++index < DebSettingsCommon::eEndOfWidgets ){
         settingsWidgets.at(index)->show();
+        settingsWidgets.at(index)->setParent( this );
         this->setCentralWidget(settingsWidgets.at(index));
         return;
     }
@@ -262,4 +268,21 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
     this->setCentralWidget(lintianWidget);
     process->execute("lintian "+workDir.absolutePath() + "/" + resultFileName);
 
+}
+
+void MainWindow::settingsWidgetGoBack(){
+    DebSettingsCommon* debWidget = qobject_cast<DebSettingsCommon*>(sender());
+    int index = settingsWidgets.indexOf( debWidget );
+    debWidget->setParent(0);//now it is saved
+    debWidget->hide();
+    if ( --index == -1 ){
+        startWidget->show();
+        startWidget->setParent( this );
+        this->setCentralWidget( startWidget );
+    }
+    else{
+        settingsWidgets.at(index)->setParent( this );
+        settingsWidgets.at(index)->show();
+        this->setCentralWidget(settingsWidgets.at(index));
+    }
 }

@@ -17,6 +17,8 @@ private:
     QLabel* label;
     QPushButton *pbNext;
     QPushButton *pbExit;
+    QPushButton *pbBack;
+
 public:
     explicit DirSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);
     virtual ~DirSettingsWidget();

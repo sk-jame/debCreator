@@ -37,6 +37,7 @@ private:
 
 
     QPushButton* pbNext;
+    QPushButton* pbBack;
     QPushButton *pbExit;
 public:
     explicit ControlSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);

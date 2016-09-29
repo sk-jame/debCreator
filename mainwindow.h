@@ -58,6 +58,7 @@ private slots:
     void okOpenClicked();
     void openClicked();
     void settingsWidgetFinished(bool shouldContinue);
+    void settingsWidgetGoBack();
 };
 
 #endif // MAINWINDOW_H

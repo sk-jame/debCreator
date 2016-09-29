@@ -13,6 +13,7 @@ class ScriptSettingsWidget : public DebSettingsCommon
     Q_OBJECT
 private:
     QPushButton *pbNext;
+    QPushButton *pbBack;
     QPushButton *pbExit;
 
     typedef struct{

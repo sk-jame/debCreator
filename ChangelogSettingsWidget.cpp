@@ -24,16 +24,22 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
        -- aai <a.aleksandrov@neroelectronics.by> Sun, 28 Sep 2016 18:34:46 +0300"), this);
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
+    pbBack = new QPushButton(tr("Назад"),this);
+    pbBack->setShortcut(QKeySequence("ALT+B"));
     pbExit = new QPushButton(tr("Выход"),this);
 
     QGridLayout* lay = new QGridLayout(this);
     lay->addWidget(label,  0, 0, 1, 3, Qt::AlignCenter);
     lay->addWidget(teChangeLog, 1, 0, 1, 3 );
+    lay->addWidget(pbExit, 2, 0, 1, 1 );
+    lay->addWidget(pbBack, 2, 1, 1, 1 );
     lay->addWidget(pbNext, 2, 2, 1, 1 );
-    lay->addWidget(pbExit, 2, 1, 1, 1 );
 
-    connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
+
+
     connect( pbExit, SIGNAL(clicked()), this, SLOT(exitClicked()));
+    connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
+    connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
 }
 
 ChangelogSettingsWidget::~ChangelogSettingsWidget(){
