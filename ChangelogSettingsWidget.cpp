@@ -22,6 +22,8 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
     supersh (1.0-1) stable; urgency=medium\n\
         * Testing.\n\
        -- aai <a.aleksandrov@neroelectronics.by> Sun, 28 Sep 2016 18:34:46 +0300"), this);
+
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
     pbBack = new QPushButton(tr("Назад"),this);
@@ -51,7 +53,7 @@ ChangelogSettingsWidget::~ChangelogSettingsWidget(){
 
 void ChangelogSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFile("changelog", ok);
+    QTextStream& stream = openFile("changelog", ok, 644);
     if ( ok == false ) return;
     stream << teChangeLog->toPlainText();
     closeFile();

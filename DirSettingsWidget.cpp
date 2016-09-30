@@ -37,7 +37,7 @@ DirSettingsWidget::~DirSettingsWidget(){
 
 void DirSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFile("changelog", ok);
+    QTextStream& stream = openFile("changelog", ok, 644);
     if ( ok == false ) return;
 
     stream << teDirs->toPlainText();

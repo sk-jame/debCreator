@@ -114,7 +114,7 @@ ControlSettingsWidget::~ControlSettingsWidget(){
 
 void ControlSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = this->openFile("control", ok);
+    QTextStream& stream = this->openFile("control", ok, 644);
 
     if ( ok == false ) return;
 

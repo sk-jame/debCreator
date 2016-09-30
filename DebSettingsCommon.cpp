@@ -14,7 +14,7 @@ void DebSettingsCommon::setWorkDir(const QDir &value){
  * @param fileName - not absolute path. fileName should be starting from DEBIAN folder
  * @return
  */
-QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok){
+QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok, int access){
     ok = false;
     if ( !workDir.absolutePath().endsWith("DEBIAN") ){
         if ( workDir.cd("DEBIAN") == false ){
@@ -31,6 +31,9 @@ QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok){
         QMessageBox::critical(this, tr("Ошибка записи"),
                               tr("Не смог создать(перезаписать) файл.\nПроверьте права доступа к каталогу"));
         return stream;
+    }
+    if ( access != 0 ){
+        QProcess::execute("chmod " + QString().number(access) + " " + file.fileName());
     }
     ok = true;
     stream.setDevice(&file);

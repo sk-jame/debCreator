@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QTextStream>
 #include <QDir>
+#include <QProcess>
 
 class DebSettingsCommon : public QWidget
 {
@@ -14,7 +15,7 @@ private:
     QTextStream stream;
 protected:
     static QDir workDir;
-    QTextStream& openFile(QString fileName, bool &ok);
+    QTextStream& openFile(QString fileName, bool &ok, int access = 0);
     void closeFile();
 public:
     explicit DebSettingsCommon(QDir _workDir = QDir(),QWidget *parent = 0);

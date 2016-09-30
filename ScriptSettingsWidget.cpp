@@ -104,7 +104,7 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
         if ( str->lePath->text().isEmpty() ){
             // create Empty files
             bool ok;
-            openFile(fileName, ok);
+            openFile(fileName, ok, 777);
             closeFile();
         }
         else{

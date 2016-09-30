@@ -6,7 +6,7 @@
 #include <QDebug>
 
 void MainWindow::createLintianWidget(){
-    lintianWidget = new QWidget(this);
+    lintianWidget = new QWidget(0);
     lintianLabel = new QLabel(lintianWidget);
     pbExit = new QPushButton(tr("Выход"),lintianWidget);
     QVBoxLayout* linlay = new QVBoxLayout(lintianWidget);
@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     }
 
     process = new QProcess(this);
+    process->setProcessChannelMode(QProcess::MergedChannels);
     connect(process, SIGNAL(readyReadStandardOutput()),
             this,    SLOT(readDatafromStdOut()));
 
@@ -116,27 +117,19 @@ MainWindow::~MainWindow(){
 //    delete lePath;
 //    delete label;
 //    delete buttonBox;
-    //    delete pbOpen;
+//    delete pbOpen;
 }
 
 void MainWindow::readDatafromStdOut(){
     if ( writeMd5Sum ){
-        writeMd5Sum = false;
         QString str = process->readAllStandardOutput();
-        QFile file(workDir.absolutePath()+"/DEBIAN/md5sum");
-        if ( !file.open(QIODevice::Truncate | QIODevice::WriteOnly)){
-            QMessageBox::critical(this, tr("Ошибка записи"),
-                                  tr("Не смог создать(перезаписать) файл.\nПроверьте права доступа к каталогу"));
-            this->close();
-            return;
-        }
-        QTextStream stream(&file);
+        QTextStream stream(&md5sumFile);
         stream << str;
         stream.flush();
-        file.close();
     }
     else if ( testDeb ){
-        lintianLabel->setText( process->readAllStandardOutput());
+        QString str = lintianLabel->text()+"\n"+process->readAllStandardOutput();
+        lintianLabel->setText( str );
     }
 }
 
@@ -240,15 +233,32 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
     // создаём deb архив
 
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/conffiles");
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/conffiles");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/copyright");
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/copyright");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/md5sum");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/menu");
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/menu");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/rules");
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/rules");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/watch");
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/watch");
 
+    // md5sum
+    md5sumFile.setFileName(workDir.absolutePath()+"/DEBIAN/md5sum");
+    if ( !md5sumFile.open(QIODevice::Truncate | QIODevice::WriteOnly)){
+        QMessageBox::critical(this, tr("Ошибка записи"),
+                              tr("Не смог создать(перезаписать) файл.\nПроверьте права доступа к каталогу"));
+        this->close();
+        return;
+    }
     writeMd5Sum = true;
-    process->execute("md5deep -r " + workDir.absolutePath());
-    while( writeMd5Sum ) { QApplication::processEvents(QEventLoop::AllEvents, 10 ); }
+    process->start("md5deep -r " + workDir.absolutePath());
+    process->waitForFinished();
+    writeMd5Sum = false;
+    md5sumFile.close();
+    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/md5sum");
+    // !md5sum
 
     process->execute("fakeroot dpkg-deb --build " + workDir.absolutePath());
 
@@ -264,10 +274,12 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
 
     checkInstalledSoft("lintian");
     testDeb = true;
-    lintianWidget->show();
+    lintianWidget->setParent( this );
     this->setCentralWidget(lintianWidget);
-    process->execute("lintian "+workDir.absolutePath() + "/" + resultFileName);
-
+    lintianWidget->show();
+    process->start("lintian "+workDir.absolutePath() + "/" + resultFileName);
+    process->waitForFinished();
+    testDeb = false;
 }
 
 void MainWindow::settingsWidgetGoBack(){

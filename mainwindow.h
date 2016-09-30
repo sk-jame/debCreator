@@ -49,6 +49,8 @@ private:
     void checkInstalledSoft(QString softName);
     bool writeMd5Sum;
     bool testDeb;
+
+    QFile md5sumFile;
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
