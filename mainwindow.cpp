@@ -8,6 +8,9 @@
 void MainWindow::createLintianWidget(){
     lintianWidget = new QWidget(0);
     lintianLabel = new QLabel(lintianWidget);
+    lintianLabel->setTextFormat(Qt::RichText);
+    lintianLabel->setStyleSheet("background-color: black");
+    lintianLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     pbExit = new QPushButton(tr("Выход"),lintianWidget);
     QVBoxLayout* linlay = new QVBoxLayout(lintianWidget);
     linlay->addWidget(lintianLabel);
@@ -96,6 +99,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
             settingsWidgets << widget;
             }
             break;
+        case DebSettingsCommon::eCopyrightWidget:{
+            CopyrightsSettingsWidget* widget = new CopyrightsSettingsWidget();
+            settingsWidgets << widget;
+            }
+            break;
         }
         connect( settingsWidgets.last(), SIGNAL(finished(bool)),
                  this, SLOT(settingsWidgetFinished(bool)));
@@ -128,7 +136,11 @@ void MainWindow::readDatafromStdOut(){
         stream.flush();
     }
     else if ( testDeb ){
-        QString str = lintianLabel->text()+"\n"+process->readAllStandardOutput();
+        QString out = process->readAllStandardOutput();
+        QString str = lintianLabel->text()+"</font><br>"+out;
+        qDebug()<< out;
+        str.replace("E:", "<font color='red'>Error: ");
+        str.replace("W:", "<font color='yellow'>Warning: ");
         lintianLabel->setText( str );
     }
 }
@@ -234,8 +246,6 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
 
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/conffiles");
     process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/conffiles");
-    process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/copyright");
-    process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/copyright");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/md5sum");
     process->execute("touch "+ workDir.absolutePath() + "/DEBIAN/menu");
     process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/menu");

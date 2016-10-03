@@ -13,6 +13,7 @@
 #include "DirSettingsWidget.h"
 #include "ChangelogSettingsWidget.h"
 #include "ScriptSettingsWidget.h"
+#include "CopyrightsSettingsWidget.h"
 #include <QProcess>
 
 class MainWindow : public QMainWindow

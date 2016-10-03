@@ -19,11 +19,13 @@ SOURCES += main.cpp\
     DirSettingsWidget.cpp \
     ChangelogSettingsWidget.cpp \
     ScriptSettingsWidget.cpp \
-    DebSettingsCommon.cpp
+    DebSettingsCommon.cpp \
+    CopyrightsSettingsWidget.cpp
 
 HEADERS  += mainwindow.h \
     ControlSettingsWidget.h \
     DirSettingsWidget.h \
     ChangelogSettingsWidget.h \
     ScriptSettingsWidget.h \
-    DebSettingsCommon.h
+    DebSettingsCommon.h \
+    CopyrightsSettingsWidget.h

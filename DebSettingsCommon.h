@@ -25,6 +25,7 @@ public:
         eDirWidget,
         eChangeLogWidget,
         eScriptWidget,
+        eCopyrightWidget,
         eEndOfWidgets
     }ESettingsWidgets;
 
