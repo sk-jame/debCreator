@@ -207,6 +207,7 @@ void MainWindow::okOpenClicked(){
     startWidget->hide();
     startWidget->setParent(0);
     settingsWidgets.first()->setWorkDir(workDir);
+    settingsWidgets.first()->updateWidgetsData();
     settingsWidgets.first()->setParent(this);
     this->setCentralWidget(settingsWidgets.first());
 }
@@ -238,6 +239,7 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
     // если дальше есть ещё виджеты - показываем их
     if ( ++index < DebSettingsCommon::eEndOfWidgets ){
         settingsWidgets.at(index)->show();
+        settingsWidgets.at(index)->updateWidgetsData();
         settingsWidgets.at(index)->setParent( this );
         this->setCentralWidget(settingsWidgets.at(index));
         return;

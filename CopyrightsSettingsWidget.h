@@ -16,6 +16,7 @@ private:
 public:
     CopyrightsSettingsWidget(QDir _workDir = QDir(), QWidget* parent = 0);
     virtual ~CopyrightsSettingsWidget();
+    virtual void updateWidgetsData();
 protected slots:
     virtual void saveChangesAndGoNext();
 };

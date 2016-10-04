@@ -39,11 +39,15 @@ private:
     QPushButton* pbNext;
     QPushButton* pbBack;
     QPushButton *pbExit;
+
+    void parseControlFile(QStringList &data, const QString key, QWidget* leForSave );
 public:
     explicit ControlSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);
     virtual ~ControlSettingsWidget();
+    virtual void updateWidgetsData();
 signals:
     void someData(QString name, QString version, QString arch);
+public slots:
 private slots:
     virtual void saveChangesAndGoNext();
 };

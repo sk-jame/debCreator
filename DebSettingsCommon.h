@@ -15,7 +15,8 @@ private:
     QTextStream stream;
 protected:
     static QDir workDir;
-    QTextStream& openFile(QString fileName, bool &ok, int access = 0);
+    QTextStream& openFileForSave(QString fileName, bool &ok, int access = 0);
+    QString tryToReadDataFromFile( QString fileName );
     void closeFile();
 public:
     explicit DebSettingsCommon(QDir _workDir = QDir(),QWidget *parent = 0);
@@ -29,6 +30,7 @@ public:
         eEndOfWidgets
     }ESettingsWidgets;
 
+    virtual void updateWidgetsData();
     static void setWorkDir(const QDir &value);
 
 signals:

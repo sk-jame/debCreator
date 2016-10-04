@@ -22,6 +22,7 @@ private:
 public:
     explicit ChangelogSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);
     ~ChangelogSettingsWidget();
+    virtual void updateWidgetsData();
 private slots:
     virtual void saveChangesAndGoNext();
 };

@@ -46,9 +46,16 @@ CopyrightsSettingsWidget::~CopyrightsSettingsWidget(){
 
 }
 
+void CopyrightsSettingsWidget::updateWidgetsData(){
+    QString res = this->tryToReadDataFromFile("copyright");
+    if ( res.isEmpty() == false ){
+        teCopyRights->setPlainText( res );
+    }
+}
+
 void CopyrightsSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = this->openFile("copyright", ok, 644);
+    QTextStream& stream = this->openFileForSave("copyright", ok, 644);
 
     if ( ok == false ) return;
 

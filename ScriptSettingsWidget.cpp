@@ -72,7 +72,7 @@ ScriptSettingsWidget::~ScriptSettingsWidget(){
 }
 
 void ScriptSettingsWidget::pbOpenClicked(){
-    QString path = QFileDialog::getOpenFileName(this, "Выберете папку содержащую sysroot");
+    QString path = QFileDialog::getOpenFileName(this, "Выберете файл скрипта", workDir.absolutePath());
     if ( path.isEmpty() ) return;
     QPushButton* pb = qobject_cast<QPushButton*>(sender());
     foreach(ChoosePath* str, widgetsList){
@@ -104,7 +104,7 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
         if ( str->lePath->text().isEmpty() ){
             // create Empty files
             bool ok;
-            openFile(fileName, ok, 777);
+            openFileForSave(fileName, ok, 777);
             closeFile();
         }
         else{

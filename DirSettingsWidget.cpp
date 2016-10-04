@@ -35,9 +35,16 @@ DirSettingsWidget::~DirSettingsWidget(){
     delete pbExit;
 }
 
+void DirSettingsWidget::updateWidgetsData(){
+    QString res = this->tryToReadDataFromFile("dirs");
+    if ( res.isEmpty() == false ){
+        teDirs->setPlainText( res );
+    }
+}
+
 void DirSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFile("changelog", ok, 644);
+    QTextStream& stream = openFileForSave("dirs", ok, 644);
     if ( ok == false ) return;
 
     stream << teDirs->toPlainText();

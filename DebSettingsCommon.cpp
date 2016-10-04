@@ -14,7 +14,7 @@ void DebSettingsCommon::setWorkDir(const QDir &value){
  * @param fileName - not absolute path. fileName should be starting from DEBIAN folder
  * @return
  */
-QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok, int access){
+QTextStream& DebSettingsCommon::openFileForSave(QString fileName, bool &ok, int access){
     ok = false;
     if ( !workDir.absolutePath().endsWith("DEBIAN") ){
         if ( workDir.cd("DEBIAN") == false ){
@@ -27,6 +27,7 @@ QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok, int access
         }
     }
     file.setFileName(workDir.absolutePath() + "/" + fileName);
+
     if ( !file.open(QIODevice::Truncate | QIODevice::WriteOnly)){
         QMessageBox::critical(this, tr("Ошибка записи"),
                               tr("Не смог создать(перезаписать) файл.\nПроверьте права доступа к каталогу"));
@@ -40,6 +41,30 @@ QTextStream& DebSettingsCommon::openFile( QString fileName, bool &ok, int access
     return stream;
 }
 
+QString DebSettingsCommon::tryToReadDataFromFile(QString fileName){
+    QString res;
+    if ( !workDir.absolutePath().endsWith("DEBIAN") ){
+        if ( workDir.cd("DEBIAN") == false ){
+            return res;
+        }
+    }
+
+    file.setFileName(workDir.absolutePath() + "/" + fileName);
+
+    if ( file.exists()){
+        if ( file.open(QIODevice::ReadOnly) ){
+            stream.setDevice(&file);
+            res = stream.readAll();
+            file.close();
+
+            return res;
+        }
+    }
+
+    return res;
+
+}
+
 void DebSettingsCommon::closeFile(){
     stream.flush();
     file.close();
@@ -47,6 +72,10 @@ void DebSettingsCommon::closeFile(){
 
 DebSettingsCommon::DebSettingsCommon(QDir _workDir, QWidget *parent) : QWidget(parent){
     workDir = _workDir;
+
+}
+
+void DebSettingsCommon::updateWidgetsData(){
 
 }
 

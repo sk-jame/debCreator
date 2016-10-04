@@ -22,6 +22,7 @@ private:
 public:
     explicit DirSettingsWidget(QDir workDir = QDir(), QWidget *parent = 0);
     virtual ~DirSettingsWidget();
+    virtual void updateWidgetsData();
 private slots:
     virtual void saveChangesAndGoNext();
 };

@@ -1,6 +1,57 @@
 #include "ControlSettingsWidget.h"
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QString>
+
+void ControlSettingsWidget::parseControlFile(QStringList &data, QString key, QWidget *widget){
+    int index = 0;
+    foreach(QString string, data){
+        if (string.startsWith(key)){
+            index = data.indexOf( string );
+        }
+    }
+    QString temp = data.takeAt(index);
+    if ( key.endsWith(": ") == false ) key.append(": ");
+    temp.remove(key);
+
+    if ( key.contains("Description")){
+
+        descriptionShort->setText( temp );
+        QString teRes;
+        while(temp.isEmpty() == false ){
+            temp = data.at(index);
+            if ( temp.startsWith(" ") ){
+                teRes.append(temp);
+                teRes.append("\n");
+                data.removeAt(index);
+            }
+            else break;
+        }
+
+        descriptionLong->setPlainText( teRes );
+        return;
+    }
+    else if ( key.contains("Maintainer") ){
+        index = temp.indexOf("<");
+        if ( index == -1 ) return;
+        QString name;
+        for(int i = 0; i < index; i++ ){
+            name += temp.at(i);
+        }
+        maintName->setText(name);
+        temp.remove(0,index);
+        temp.remove("<");
+        temp.remove(">");
+        maintMail->setText(temp);
+        return;
+    }
+    else if ( key.contains("Section") || key.contains("Architecture")){
+        qobject_cast<QComboBox*>(widget)->setCurrentText(temp);
+        return;
+    }
+
+    qobject_cast<QLineEdit*>(widget)->setText( temp );
+}
 
 ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : DebSettingsCommon(workDir,parent){
     QGridLayout* lay = new QGridLayout(this);
@@ -85,6 +136,8 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
 
     connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
     connect( pbExit, SIGNAL(clicked()), this, SLOT(exitClicked()));
+
+
 }
 
 ControlSettingsWidget::~ControlSettingsWidget(){
@@ -112,9 +165,24 @@ ControlSettingsWidget::~ControlSettingsWidget(){
     delete pbExit;
 }
 
+void ControlSettingsWidget::updateWidgetsData(){
+    QString res = this->tryToReadDataFromFile("control");
+    if ( !res.isEmpty() ){
+        QStringList temp = res.split("\n");
+        parseControlFile(temp, "Package", packName );
+        parseControlFile(temp, "Version", version );
+        parseControlFile(temp, "Section", section );
+        parseControlFile(temp, "Architecture", arch );
+        parseControlFile(temp, "Depends", depends );
+        parseControlFile(temp, "Maintainer", maintName );
+        parseControlFile(temp, "Description", descriptionShort );
+
+    }
+}
+
 void ControlSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = this->openFile("control", ok, 644);
+    QTextStream& stream = this->openFileForSave("control", ok, 644);
 
     if ( ok == false ) return;
 
@@ -124,7 +192,7 @@ void ControlSettingsWidget::saveChangesAndGoNext(){
     stream << "Architecture: " + arch->currentText() << "\n";
     stream << "Depends: " + depends->text() << "\n";
     stream << "Maintainer: " + maintName->text() + " <" + maintMail->text() << ">\n";
-    stream << "Description: " + descriptionShort->text() << "\n " << descriptionLong->toPlainText() <<".\n";
+    stream << "Description: " + descriptionShort->text() << "\n " << descriptionLong->toPlainText() <<" .\n";
     closeFile();
     emit someData(packName->text(), version->text(), arch->currentText());
 

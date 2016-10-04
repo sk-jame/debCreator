@@ -51,9 +51,16 @@ ChangelogSettingsWidget::~ChangelogSettingsWidget(){
     delete label;
 }
 
+void ChangelogSettingsWidget::updateWidgetsData(){
+    QString res = this->tryToReadDataFromFile("changelog");
+    if ( res.isEmpty() == false ){
+        teChangeLog->setPlainText( res );
+    }
+}
+
 void ChangelogSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFile("changelog", ok, 644);
+    QTextStream& stream = openFileForSave("changelog", ok, 644);
     if ( ok == false ) return;
     stream << teChangeLog->toPlainText();
     closeFile();
