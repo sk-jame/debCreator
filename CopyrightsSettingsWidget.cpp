@@ -9,8 +9,7 @@ CopyrightsSettingsWidget::CopyrightsSettingsWidget(QDir _workDir, QWidget *paren
 
     QVBoxLayout* mainLay = new QVBoxLayout(this);
     label = new QLabel(tr("Заполните текст лицензии.\nОзнакомится с примером можно http://dep.debian.net/deps/dep5 "), this);
-    label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-    label->setOpenExternalLinks(true);
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
     teCopyRights = new QTextEdit(this);
 
     mainLay->addWidget(label);
