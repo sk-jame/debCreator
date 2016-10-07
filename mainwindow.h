@@ -16,6 +16,8 @@
 #include "CopyrightsSettingsWidget.h"
 #include <QProcess>
 
+#define VERSION "v1.0.0"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -46,9 +48,11 @@ private:
 
     QString currentCheck;
     QString resultFileName;
+    QString fakeRootOut;
 
     void checkInstalledSoft(QString softName);
     bool writeMd5Sum;
+    bool fakeRootCheck;
     bool testDeb;
 
     QFile md5sumFile;
@@ -57,6 +61,7 @@ public:
     ~MainWindow();
 private slots:
     void readDatafromStdOut();
+    void readDataFromStdError();
     void createFileName(QString name, QString version, QString arch);
     void okOpenClicked();
     void openClicked();

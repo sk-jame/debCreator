@@ -18,11 +18,15 @@ void ControlSettingsWidget::parseControlFile(QStringList &data, QString key, QWi
 
         descriptionShort->setText( temp );
         QString teRes;
-        while(temp.isEmpty() == false ){
+        while(data.isEmpty() == false ){
             temp = data.at(index);
-            if ( temp.startsWith(" ") ){
+            if ( temp.startsWith(" ")
+                 && temp.count() > 1
+                 && temp != " .")
+            {
+                temp.remove(0,1);
                 teRes.append(temp);
-                teRes.append("\n");
+                teRes.replace(".","\n");
                 data.removeAt(index);
             }
             else break;
@@ -61,6 +65,12 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
     depends = new QLineEdit(this);
     maintName = new QLineEdit(this);
     maintMail = new QLineEdit(this);
+    predepends = new QLineEdit(this);
+    conflicts = new QLineEdit(this);
+    replaces = new QLineEdit(this);
+    recommends = new QLineEdit(this);
+    suggests = new QLineEdit(this);
+
 
     descriptionShort = new QLineEdit(this);
     descriptionLong = new QTextEdit(this);
@@ -73,39 +83,60 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
     lSection = new QLabel(tr("Тип пакета(секция)"), this);
     lArch = new QLabel(tr("Архитектура"), this);
     lDepends = new QLabel(tr("Зависимости\nПосле имени пакета можно в круглых скобках указать ограничение на версию,\nиспользуя операторы: <<, =, >>, <=, >=.\nЕсли оператор не указан — используется >="), this);
+    lPredepends = new QLabel(tr("Список пакетов, которые требуются в процессе установки этого пакета.\nЭти зависимости могут потребоваться для скриптов установки пакета:\nнапример, пакет flash-installer требует wget\nМожно использовать ограничения на версию (см. Depends)."));
+    lConflicts = new QLabel(tr("Список пакетов, которые не могут быть установлены одновременно с этим.\nУстановка не удастся, если хоть один из перечисленных пакетов уже будет установлен."));
+    lReplaces = new QLabel(tr("Список пакетов, файлы которых модифицируются этим пакетом.\nТребуется в случае создания «пакета-патча», изменяющего что-либо:\nв противном случае при замене файлов чужого пакета возникнет ошибка при установке. "));
+    lRecommends = new QLabel(tr("Список пакетов, рекомендуемых к установке\nЭти пакеты не обязательны, но обычно используются вместе с текущим"));
+    lSuggests = new QLabel(tr("Список пакетов, предлагаемых к установке.\nЭти пакеты не обязательны"));
+
     lMainName = new QLabel(tr("Имя создателя пакета"), this);
     lMainMail = new QLabel(tr("Почтовый ящик\nсоздателя пакета"), this);
     lDescrShort = new QLabel(tr("Краткое описание пакета(70 символов)"),this);
-    lDescrLong = new QLabel(tr("Подробное описание пакета\nКаждая строка должна, начинаться с пробела.\n\В расширенном описании все переводы строки игнорируются.\nДля вставки \\n используется одиночная точка."),this);
+    lDescrLong = new QLabel(tr("Подробное описание пакета\nТочка '.' является переносом строки!\nТочки в местах переноса строки устанавливаются автоматически!"),this);
 
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
     pbExit = new QPushButton(tr("Выход"),this);
+    pbBack = new QPushButton(tr("Назад"),this);
+    pbBack->setShortcut(QKeySequence("ALT+B"));
 
-    lay->addWidget(lName,       0, 0, 1, 1 );
-    lay->addWidget(lVersion,    1, 0, 1, 1 );
-    lay->addWidget(lSection,    2, 0, 1, 1 );
-    lay->addWidget(lArch,       3, 0, 1, 1 );
-    lay->addWidget(lDepends,    4, 0, 1, 1 );
-    lay->addWidget(lMainName,   5, 0, 1, 1 );
-    lay->addWidget(lMainMail,   6, 0, 1, 1 );
-    lay->addWidget(lDescrShort, 7, 0, 1, 1 );
-    lay->addWidget(lDescrLong,  8, 0, 3, 1 );
+    const int descrLongRowCnt = 3;
+    int layRow = 0;
+    lay->addWidget(lName,       layRow++, 0, 1, 1 );
+    lay->addWidget(lVersion,    layRow++, 0, 1, 1 );
+    lay->addWidget(lSection,    layRow++, 0, 1, 1 );
+    lay->addWidget(lArch,       layRow++, 0, 1, 1 );
+    lay->addWidget(lDepends,    layRow++, 0, 1, 1 );
+    lay->addWidget(lPredepends, layRow++, 0, 1, 1 );
+    lay->addWidget(lConflicts,  layRow++, 0, 1, 1 );
+    lay->addWidget(lReplaces,   layRow++, 0, 1, 1 );
+    lay->addWidget(lRecommends, layRow++, 0, 1, 1 );
+    lay->addWidget(lSuggests,   layRow++, 0, 1, 1 );
+    lay->addWidget(lMainName,   layRow++, 0, 1, 1 );
+    lay->addWidget(lMainMail,   layRow++, 0, 1, 1 );
+    lay->addWidget(lDescrShort, layRow++, 0, 1, 1 );
+    lay->addWidget(lDescrLong,  layRow++, 0, 3, 1 );
+
+    layRow = 0;
+    lay->addWidget(packName,    layRow++, 1, 1, 3 );
+    lay->addWidget(version,     layRow++, 1, 1, 3 );
+    lay->addWidget(section,     layRow++, 1, 1, 3 );
+    lay->addWidget(arch,        layRow++, 1, 1, 3 );
+    lay->addWidget(depends,     layRow++, 1, 1, 3 );
+    lay->addWidget(predepends,  layRow++, 1, 1, 3 );
+    lay->addWidget(conflicts,   layRow++, 1, 1, 3 );
+    lay->addWidget(replaces,    layRow++, 1, 1, 3 );
+    lay->addWidget(recommends,  layRow++, 1, 1, 3 );
+    lay->addWidget(suggests,    layRow++, 1, 1, 3 );
+    lay->addWidget(maintName,   layRow++, 1, 1, 3 );
+    lay->addWidget(maintMail,   layRow++, 1, 1, 3 );
+    lay->addWidget(descriptionShort, layRow++, 1, 1, 3 );
+    lay->addWidget(descriptionLong,  layRow++, 1, 3, 3 );
 
 
-    lay->addWidget(packName,    0, 1, 1, 2 );
-    lay->addWidget(version,     1, 1, 1, 2 );
-    lay->addWidget(section,     2, 1, 1, 2 );
-    lay->addWidget(arch,        3, 1, 1, 2 );
-    lay->addWidget(depends,     4, 1, 1, 2 );
-    lay->addWidget(maintName,   5, 1, 1, 2 );
-    lay->addWidget(maintMail,   6, 1, 1, 2 );
-    lay->addWidget(descriptionShort, 7, 1, 1, 2 );
-    lay->addWidget(descriptionLong,  8, 1, 3, 2 );
-
-
-    lay->addWidget(pbNext, 11, 3, 1, 1);
-    lay->addWidget(pbExit, 11, 1, 1, 1);
+    lay->addWidget(pbExit, layRow + descrLongRowCnt, 1, 1, 1);
+    lay->addWidget(pbBack, layRow + descrLongRowCnt, 2, 1, 1);
+    lay->addWidget(pbNext, layRow + descrLongRowCnt, 3, 1, 1);
 
     // настройка комбо боксов
     {
@@ -127,9 +158,7 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
         arch->setCurrentIndex( archList.indexOf("armhf") );
     }
 
-    pbBack = new QPushButton(tr("Назад"),this);
-    pbBack->setShortcut(QKeySequence("ALT+B"));
-    lay->addWidget(pbBack, 11, 2, 1, 1 );
+
 
     connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
 
@@ -151,6 +180,17 @@ ControlSettingsWidget::~ControlSettingsWidget(){
     delete descriptionShort;
     delete descriptionLong;
 
+    delete predepends;
+    delete conflicts;
+    delete replaces;
+    delete recommends;
+    delete suggests;
+    delete lPredepends;
+    delete lConflicts;
+    delete lReplaces;
+    delete lRecommends;
+    delete lSuggests;
+
     delete lName;
     delete lVersion;
     delete lSection;
@@ -162,6 +202,7 @@ ControlSettingsWidget::~ControlSettingsWidget(){
     delete lDescrLong;
 
     delete pbNext;
+    delete pbBack;
     delete pbExit;
 }
 
@@ -174,6 +215,11 @@ void ControlSettingsWidget::updateWidgetsData(){
         parseControlFile(temp, "Section", section );
         parseControlFile(temp, "Architecture", arch );
         parseControlFile(temp, "Depends", depends );
+        parseControlFile(temp, "Pre-Depends", predepends );
+        parseControlFile(temp, "Conflicts", conflicts );
+        parseControlFile(temp, "Replaces", replaces );
+        parseControlFile(temp, "Recommends", recommends );
+        parseControlFile(temp, "Suggests", suggests );
         parseControlFile(temp, "Maintainer", maintName );
         parseControlFile(temp, "Description", descriptionShort );
 
@@ -191,8 +237,19 @@ void ControlSettingsWidget::saveChangesAndGoNext(){
     stream << "Section: " + section->currentText() << "\n";
     stream << "Architecture: " + arch->currentText() << "\n";
     stream << "Depends: " + depends->text() << "\n";
+    stream << "Pre-Depends: " + predepends->text() << "\n";
+    stream << "Conflicts: " + conflicts->text() << "\n";
+    stream << "Replaces: " + replaces->text() << "\n";
+    stream << "Recommends: " + recommends->text() << "\n";
+    stream << "Suggests: " + suggests->text() << "\n";
     stream << "Maintainer: " + maintName->text() + " <" + maintMail->text() << ">\n";
-    stream << "Description: " + descriptionShort->text() << "\n " << descriptionLong->toPlainText() <<" .\n";
+    stream << "Description: " + descriptionShort->text() << "\n ";
+    QString temp = descriptionLong->toPlainText();
+    if ( temp.endsWith("\n") ) temp.remove(temp.lastIndexOf("\n"), 1 );//temp.append("\n");
+    temp.replace("\n", ".\n ");
+    temp.append(".\n");
+    stream << temp;
+
     closeFile();
     emit someData(packName->text(), version->text(), arch->currentText());
 

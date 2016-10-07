@@ -32,6 +32,7 @@ DirSettingsWidget::~DirSettingsWidget(){
     delete teDirs;
     delete label;
     delete pbNext;
+    delete pbBack;
     delete pbExit;
 }
 

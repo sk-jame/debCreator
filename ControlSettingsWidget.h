@@ -21,15 +21,27 @@ private:
     QLineEdit* maintName;
     QLineEdit* maintMail;
     QLineEdit* descriptionShort;
+
+    QLineEdit *predepends;
+    QLineEdit *conflicts;
+    QLineEdit *replaces;
+    QLineEdit *recommends;
+    QLineEdit *suggests;
+
     QTextEdit* descriptionLong;
     QComboBox* section;
     QComboBox* arch;
 
-    QLabel* lName;
+    QLabel *lName;
     QLabel *lVersion;
     QLabel *lSection;
     QLabel *lArch;
     QLabel *lDepends;
+    QLabel *lPredepends;
+    QLabel *lConflicts;
+    QLabel *lReplaces;
+    QLabel *lRecommends;
+    QLabel *lSuggests;
     QLabel *lMainName;
     QLabel *lMainMail;
     QLabel *lDescrShort;

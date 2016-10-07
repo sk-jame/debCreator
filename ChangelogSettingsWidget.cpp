@@ -47,6 +47,7 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
 ChangelogSettingsWidget::~ChangelogSettingsWidget(){
     delete teChangeLog;
     delete pbNext;
+    delete pbBack;
     delete pbExit;
     delete label;
 }

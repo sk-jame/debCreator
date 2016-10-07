@@ -72,6 +72,7 @@ inline void MainWindow::checkInstalledSoft(QString softName){
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    this->setWindowTitle(QString("debCreator ") + QString(VERSION));
     createMainWidget();
     createLintianWidget();
 
@@ -116,16 +117,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     connect(process, SIGNAL(readyReadStandardOutput()),
             this,    SLOT(readDatafromStdOut()));
 
+    connect(process, SIGNAL(readyReadStandardError()),
+            this,    SLOT(readDataFromStdError()));
+
     testDeb = false;
     writeMd5Sum = false;
 }
 
 MainWindow::~MainWindow(){
-//    delete startWidget;
-//    delete lePath;
-//    delete label;
-//    delete buttonBox;
-//    delete pbOpen;
+    while(settingsWidgets.count()){
+        delete settingsWidgets.takeLast();
+    }
+    delete lePath;
+    delete label;
+    delete buttonBox;
+    delete pbOpenSave;
+    delete startWidget;
 }
 
 void MainWindow::readDatafromStdOut(){
@@ -138,11 +145,19 @@ void MainWindow::readDatafromStdOut(){
     else if ( testDeb ){
         QString out = process->readAllStandardOutput();
         QString str = lintianLabel->text()+"</font><br>"+out;
-        qDebug()<< out;
         str.replace("E:", "<font color='red'>Error: ");
         str.replace("W:", "<font color='yellow'>Warning: ");
         lintianLabel->setText( str );
     }
+}
+
+void MainWindow::readDataFromStdError(){
+    if ( fakeRootCheck ){
+            fakeRootOut.clear();
+            fakeRootOut.append( process->readAllStandardOutput() );
+            fakeRootOut.append( "\n" );
+            fakeRootOut.append( process->readAllStandardError() );
+        }
 }
 
 void MainWindow::createFileName(QString name, QString version, QString arch){
@@ -272,7 +287,18 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
     process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/md5sum");
     // !md5sum
 
-    process->execute("fakeroot dpkg-deb --build " + workDir.absolutePath());
+    // fakeroot ( create deb )
+    fakeRootCheck = true;
+    process->start("fakeroot dpkg-deb --build " + workDir.absolutePath());
+    process->waitForFinished();
+    fakeRootCheck = false;
+    if (!fakeRootOut.isEmpty()){
+        QMessageBox::critical(this, tr("Ошибка создания пакета"),
+                              tr("Не смог создать deb-пакет.\nВывод fakeroot:\n") + fakeRootOut);
+        this->close();
+        return;
+    }
+    // !fakeroot
 
     process->execute("mv " + workDir.absolutePath() + ".deb " + workDir.absolutePath() + "/" + resultFileName);
 
@@ -305,8 +331,9 @@ void MainWindow::settingsWidgetGoBack(){
         this->setCentralWidget( startWidget );
     }
     else{
-        settingsWidgets.at(index)->setParent( this );
         settingsWidgets.at(index)->show();
+        settingsWidgets.at(index)->updateWidgetsData();
+        settingsWidgets.at(index)->setParent( this );
         this->setCentralWidget(settingsWidgets.at(index));
     }
 }

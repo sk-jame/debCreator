@@ -68,7 +68,7 @@ ScriptSettingsWidget::~ScriptSettingsWidget(){
     }
     delete pbNext;
     delete pbExit;
-
+    delete pbBack;
 }
 
 void ScriptSettingsWidget::pbOpenClicked(){

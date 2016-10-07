@@ -43,7 +43,6 @@ CopyrightsSettingsWidget::~CopyrightsSettingsWidget(){
     delete pbBack;
     delete pbNext;
     delete pbExit;
-
 }
 
 void CopyrightsSettingsWidget::updateWidgetsData(){
