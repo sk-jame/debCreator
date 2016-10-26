@@ -300,8 +300,14 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         return;
     }
     // !fakeroot
-
     process->execute("mv " + workDir.absolutePath() + ".deb " + workDir.absolutePath() + "/" + resultFileName);
+
+    if ( !QFile::exists(workDir.absolutePath() + "/" + resultFileName)){
+        QMessageBox::critical(this, tr("Ошибка создания пакета"),
+                              tr("Не смог создать deb-пакет."));
+        this->close();
+        return;
+    }
 
     int res = QMessageBox::question(this, "Закончено", "Пакет " + resultFileName +
                              "создан в каталоге " + workDir.absolutePath() + "\nХотите проверить пакет?",
