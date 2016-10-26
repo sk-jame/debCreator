@@ -4,12 +4,14 @@
 #include <QString>
 
 void ControlSettingsWidget::parseControlFile(QStringList &data, QString key, QWidget *widget){
-    int index = 0;
+    if ( data.isEmpty()) return;
+    int index = -1;
     foreach(QString string, data){
         if (string.startsWith(key)){
             index = data.indexOf( string );
         }
     }
+    if ( index == -1 ) return;
     QString temp = data.takeAt(index);
     if ( key.endsWith(": ") == false ) key.append(": ");
     temp.remove(key);
@@ -236,20 +238,21 @@ void ControlSettingsWidget::saveChangesAndGoNext(){
     stream << "Version: " + version->text() << "\n";
     stream << "Section: " + section->currentText() << "\n";
     stream << "Architecture: " + arch->currentText() << "\n";
-    stream << "Depends: " + depends->text() << "\n";
-    stream << "Pre-Depends: " + predepends->text() << "\n";
-    stream << "Conflicts: " + conflicts->text() << "\n";
-    stream << "Replaces: " + replaces->text() << "\n";
-    stream << "Recommends: " + recommends->text() << "\n";
-    stream << "Suggests: " + suggests->text() << "\n";
-    stream << "Maintainer: " + maintName->text() + " <" + maintMail->text() << ">\n";
-    stream << "Description: " + descriptionShort->text() << "\n ";
+    if ( !depends->text().isEmpty() ) stream << "Depends: " + depends->text() << "\n";
+    if ( !predepends->text().isEmpty() ) stream << "Pre-Depends: " + predepends->text() << "\n";
+    if ( !conflicts->text().isEmpty() ) stream << "Conflicts: " + conflicts->text() << "\n";
+    if ( !replaces->text().isEmpty() ) stream << "Replaces: " + replaces->text() << "\n";
+    if ( !recommends->text().isEmpty() ) stream << "Recommends: " + recommends->text() << "\n";
+    if ( !maintName->text().isEmpty() ) stream << "Maintainer: " + maintName->text() + " <" + maintMail->text() << ">\n";
+    if ( !maintMail->text().isEmpty() ) stream << "Suggests: " + suggests->text() << "\n";
+    if ( !descriptionShort->text().isEmpty() ) stream << "Description: " + descriptionShort->text() << "\n ";
     QString temp = descriptionLong->toPlainText();
-    if ( temp.endsWith("\n") ) temp.remove(temp.lastIndexOf("\n"), 1 );//temp.append("\n");
-    temp.replace("\n", ".\n ");
-    temp.append(".\n");
-    stream << temp;
-
+    if ( !temp.isEmpty() ){
+        if ( temp.endsWith("\n") ) temp.remove(temp.lastIndexOf("\n"), 1 );//temp.append("\n");
+        temp.replace("\n", ".\n ");
+        temp.append(".\n");
+        stream << temp;
+    }
     closeFile();
     emit someData(packName->text(), version->text(), arch->currentText());
 

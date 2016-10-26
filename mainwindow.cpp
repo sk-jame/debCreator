@@ -8,6 +8,7 @@
 void MainWindow::createLintianWidget(){
     lintianWidget = new QWidget(0);
     lintianLabel = new QLabel(lintianWidget);
+    //TODO scrollbar
     lintianLabel->setTextFormat(Qt::RichText);
     lintianLabel->setStyleSheet("background-color: black");
     lintianLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
