@@ -7,7 +7,7 @@
 ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) : DebSettingsCommon(workDir, parent){
     teChangeLog = new QTextEdit(this);
     label = new QLabel(tr(
-"Формат записи:\n\
+"Заполните текст изменений.\nФормат записи:\n\
     package (version) distribution(s); urgency=urgency\n\
             [optional blank line(s), stripped]\n\
         * change details\n\
