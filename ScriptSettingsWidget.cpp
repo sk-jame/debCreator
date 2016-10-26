@@ -14,16 +14,16 @@ ScriptSettingsWidget::ScriptSettingsWidget(QDir workDir, QWidget *parent) : DebS
         QString text;
         switch (i) {
         case preInst:
-            text = QString(tr("Выберете скрипт выполняемый перед установкой"));
+            text = QString(tr("Выберете скрипт выполняемый перед установкой (preinst)"));
             break;
         case postInst:
-            text = QString(tr("Выберете скрипт выполняемый после установки"));
+            text = QString(tr("Выберете скрипт выполняемый после установки (postinst)"));
             break;
         case preRm:
-            text = QString(tr("Выберете скрипт выполняемый перед удалением"));
+            text = QString(tr("Выберете скрипт выполняемый перед удалением (prerm)"));
             break;
         case postRm:
-            text = QString(tr("Выберете скрипт выполняемый после удаления"));
+            text = QString(tr("Выберете скрипт выполняемый после удаления (postrm)"));
             break;
         }
         str->grBox = new QGroupBox(text, this);
@@ -89,16 +89,16 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
         QString fileName;
         switch (i) {
         case preInst:
-            fileName = QString("preinst.sh");
+            fileName = QString("preinst");
             break;
         case postInst:
-            fileName = QString("postinst.sh");
+            fileName = QString("postinst");
             break;
         case preRm:
-            fileName = QString("prerm.sh");
+            fileName = QString("prerm");
             break;
         case postRm:
-            fileName = QString("postrm.sh");
+            fileName = QString("postrm");
             break;
         }
         if ( str->lePath->text().isEmpty() ){
@@ -118,10 +118,12 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
             else{
                 target = QString( workDir.absolutePath() + "/DEBIAN/" + fileName );
             }
-            if ( QFile::exists(target) ){
-                QFile::remove(target);
+            if ( target != str->lePath->text()){
+                if ( QFile::exists(target) ){
+                    QFile::remove(target);
+                }
+                QFile::copy(str->lePath->text(), target);
             }
-            QFile::copy(str->lePath->text(), target);
         }
     }
 
