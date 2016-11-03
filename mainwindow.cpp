@@ -140,6 +140,7 @@ void MainWindow::readDatafromStdOut(){
     if ( writeMd5Sum ){
         QString str = process->readAllStandardOutput();
         QTextStream stream(&md5sumFile);
+        str.replace("./", "");
         stream << str;
         stream.flush();
     }
@@ -281,12 +282,22 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         return;
     }
     writeMd5Sum = true;
-    process->start("md5deep -r " + workDir.absolutePath());
-    process->waitForFinished();
+    QDir::setCurrent(workDir.absolutePath());
+    foreach( QString path, workDir.entryList()){
+        if ( path != "." && path != ".." && path != "DEBIAN"){
+            qDebug()<<"md5deep -lrs ./" + path + " ";
+            process->start("md5deep -lrs " + path + " ");
+            process->waitForFinished();
+        }
+    }
     writeMd5Sum = false;
     md5sumFile.close();
     process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/md5sum");
     // !md5sum
+
+    QDir temp = workDir.absolutePath();
+    temp.cdUp();
+    QDir::setCurrent(temp.absolutePath());
 
     // fakeroot ( create deb )
     fakeRootCheck = true;
