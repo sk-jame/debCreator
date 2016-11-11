@@ -104,7 +104,7 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
         if ( str->lePath->text().isEmpty() ){
             // create Empty files
             bool ok;
-            openFileForSave(fileName, ok, 777);
+            openFileForSave(fileName, ok, 755);
             closeFile();
         }
         else{
@@ -123,6 +123,7 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
                     QFile::remove(target);
                 }
                 QFile::copy(str->lePath->text(), target);
+                QProcess::execute("chmod 755 " + target);
             }
         }
     }

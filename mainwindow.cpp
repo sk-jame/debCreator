@@ -282,7 +282,9 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         return;
     }
     writeMd5Sum = true;
+    qDebug()<<QDir::current();
     QDir::setCurrent(workDir.absolutePath());
+    qDebug()<<QDir::current();
     foreach( QString path, workDir.entryList()){
         if ( path != "." && path != ".." && path != "DEBIAN"){
             qDebug()<<"md5deep -lrs ./" + path + " ";
@@ -294,14 +296,15 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
     md5sumFile.close();
     process->execute("chmod 644 "+ workDir.absolutePath() + "/DEBIAN/md5sum");
     // !md5sum
-
+    qDebug()<<QDir::current();
     QDir temp = workDir.absolutePath();
     temp.cdUp();
     QDir::setCurrent(temp.absolutePath());
-
+    qDebug()<<QDir::current();
     // fakeroot ( create deb )
     fakeRootCheck = true;
     process->start("fakeroot dpkg-deb --build " + workDir.absolutePath());
+    qDebug()<<"    process->start(fakeroot dpkg-deb --build "<< workDir.absolutePath() << "));";
     process->waitForFinished();
     fakeRootCheck = false;
     if (!fakeRootOut.isEmpty()){
