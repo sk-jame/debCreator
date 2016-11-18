@@ -243,7 +243,7 @@ void ControlSettingsWidget::saveChangesAndGoNext(){
     if ( !conflicts->text().isEmpty() ) stream << "Conflicts: " + conflicts->text() << "\n";
     if ( !replaces->text().isEmpty() ) stream << "Replaces: " + replaces->text() << "\n";
     if ( !recommends->text().isEmpty() ) stream << "Recommends: " + recommends->text() << "\n";
-    if ( !maintName->text().isEmpty() ) stream << "Maintainer: " + maintName->text() + " <" + maintMail->text() << ">\n";
+	if ( !maintName->text().isEmpty() ) stream << "Maintainer: " + maintName->text().simplified() + " <" + maintMail->text() << ">\n";
     if ( !maintMail->text().isEmpty() ) stream << "Suggests: " + suggests->text() << "\n";
     if ( !descriptionShort->text().isEmpty() ) stream << "Description: " + descriptionShort->text() << "\n ";
     QString temp = descriptionLong->toPlainText();

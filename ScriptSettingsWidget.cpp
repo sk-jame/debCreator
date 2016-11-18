@@ -12,22 +12,28 @@ ScriptSettingsWidget::ScriptSettingsWidget(QDir workDir, QWidget *parent) : DebS
     for(int i = 0; i < endOfScripts; i++ ){
         ChoosePath *str = new ChoosePath;
         QString text;
+		QString defaultFileName;
         switch (i) {
         case preInst:
             text = QString(tr("Выберете скрипт выполняемый перед установкой (preinst)"));
+			defaultFileName = QString("preinst");
             break;
         case postInst:
             text = QString(tr("Выберете скрипт выполняемый после установки (postinst)"));
-            break;
+			defaultFileName = QString("postinst");
+			break;
         case preRm:
             text = QString(tr("Выберете скрипт выполняемый перед удалением (prerm)"));
-            break;
+			defaultFileName = QString("prerm");
+			break;
         case postRm:
             text = QString(tr("Выберете скрипт выполняемый после удаления (postrm)"));
-            break;
+			defaultFileName = QString("postrm");
+			break;
         }
         str->grBox = new QGroupBox(text, this);
         str->lePath = new QLineEdit(str->grBox);
+		str->lePath->setText(defaultFileName);
         str->pbOpen = new QPushButton(tr("Выбрать"), str->grBox);
         QHBoxLayout* tempLay = new QHBoxLayout(str->grBox);
         tempLay->addWidget(str->lePath);
@@ -114,11 +120,14 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
             }
             else if ( workDir.absolutePath().endsWith("/DEBIAN/")){
                 target = QString( workDir.absolutePath() + fileName );
-            }
-            else{
-                target = QString( workDir.absolutePath() + "/DEBIAN/" + fileName );
-            }
-            if ( target != str->lePath->text()){
+			} else if (str->lePath->text() == fileName) {
+				target = QString( workDir.absolutePath() + "/DEBIAN/" + fileName );
+			}
+			if (
+				(target != str->lePath->text())
+				 &&
+				(fileName != str->lePath->text())
+				 ){
                 if ( QFile::exists(target) ){
                     QFile::remove(target);
                 }
