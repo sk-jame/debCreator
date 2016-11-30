@@ -4,6 +4,8 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QDebug>
+#include <QSettings>
+#include <QCompleter>
 
 void MainWindow::createLintianWidget(){
     lintianWidget = new QWidget(0);
@@ -31,6 +33,22 @@ void MainWindow::createMainWidget(){
 
     label = new QLabel(tr("Необходимо ввести путь папке содержащую sysroot пакета"), startWidget);
     lePath = new QLineEdit(startWidget);
+
+    {
+        QSettings set;
+        QVariant var = set.value(SYSROOT_SAVED_PATH);
+        QStringList savedPath;
+        if ( var.isValid() ){
+            savedPath = var.toStringList();
+            lePath->setText(savedPath.last());
+        }
+        completer = new QCompleter(savedPath, lePath);
+        completer->setMaxVisibleItems(10);
+        completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+        completer->setCaseSensitivity(Qt::CaseInsensitive);
+        lePath->setCompleter(completer);
+    }
+
     pbOpenSave = new QPushButton(tr("Открыть"),startWidget);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Close,
@@ -221,6 +239,15 @@ void MainWindow::okOpenClicked(){
             return;
     }
 
+    {
+        /*  add path to saved sysroots  */
+        QSettings set;
+        QVariant var = set.value(SYSROOT_SAVED_PATH);
+        QStringList savedPath;
+        if ( var.isValid() ) savedPath = var.toStringList();
+        savedPath.push_back(lePath->text());
+        set.setValue(SYSROOT_SAVED_PATH, savedPath );
+    }
     startWidget->hide();
     startWidget->setParent(0);
     settingsWidgets.first()->setWorkDir(workDir);
@@ -234,7 +261,9 @@ void MainWindow::okOpenClicked(){
  * открывает окно QGetOpenFileDialog и значение сохраняет в leEditPath
  */
 void MainWindow::openClicked(){
-    QString path = QFileDialog::getExistingDirectory(this, "Выберете папку содержащую sysroot");
+    QString selected;
+    if (!lePath->text().isEmpty()) selected = lePath->text();
+    QString path = QFileDialog::getExistingDirectory(this, "Выберете папку содержащую sysroot", selected);
     if ( path.isEmpty() ) return;
     lePath->setText(path);
 }

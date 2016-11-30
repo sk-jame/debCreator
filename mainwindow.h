@@ -17,6 +17,9 @@
 #include <QProcess>
 
 #define VERSION "v1.0.0"
+#define SYSROOT_SAVED_PATH "sysroot/pathList"
+
+class QCompleter;
 
 class MainWindow : public QMainWindow
 {
@@ -27,6 +30,7 @@ private:
     QDir workDir;
 
     QLineEdit* lePath;
+    QCompleter* completer;
     QLabel* label;
     QDialogButtonBox* buttonBox;
     QPushButton* pbOpenSave;
