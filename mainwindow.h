@@ -20,6 +20,7 @@
 #define SYSROOT_SAVED_PATH "sysroot/pathList"
 
 class QCompleter;
+class QScrollArea;
 
 class MainWindow : public QMainWindow
 {
@@ -45,6 +46,7 @@ private:
     void createLintianWidget();
     QWidget* lintianWidget;
     QLabel* lintianLabel;
+    QScrollArea* lintianScrArea;
     QPushButton* pbExit;
 
     void createMainWidget();

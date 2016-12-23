@@ -6,17 +6,25 @@
 #include <QDebug>
 #include <QSettings>
 #include <QCompleter>
+#include <QScrollBar>
+#include <QScrollArea>
 
 void MainWindow::createLintianWidget(){
     lintianWidget = new QWidget(0);
     lintianLabel = new QLabel(lintianWidget);
-    //TODO scrollbar
     lintianLabel->setTextFormat(Qt::RichText);
     lintianLabel->setStyleSheet("background-color: black");
     lintianLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+
+    lintianScrArea = new QScrollArea(); //lintianWidget
+    lintianScrArea->setBackgroundRole(QPalette::Dark);
+    lintianScrArea->setWidget(lintianLabel);
+    lintianScrArea->setWidgetResizable(true);
+    lintianScrArea->ensureWidgetVisible(lintianLabel, 50, 50);
+
     pbExit = new QPushButton(tr("Выход"),lintianWidget);
     QVBoxLayout* linlay = new QVBoxLayout(lintianWidget);
-    linlay->addWidget(lintianLabel);
+    linlay->addWidget(lintianScrArea);
     linlay->addSpacing( 5 );
     linlay->addWidget( pbExit );
     connect( pbExit, SIGNAL(clicked()), this, SLOT(close()));
