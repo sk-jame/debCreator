@@ -121,8 +121,8 @@ void QProgrammSettings::initializeSettings(){
 }
 
 void QProgrammSettings::apply(){
+    settings.setValue(SAVED_USE_MAIL, cbUseMail->isChecked());
     if ( cbUseMail->isChecked() ){
-        settings.setValue(SAVED_USE_MAIL, true);
         settings.setValue(SAVED_MAIL, leMail->text());
         settings.setValue(SAVED_MAINTAINER, leMaintainer->text());
     }
