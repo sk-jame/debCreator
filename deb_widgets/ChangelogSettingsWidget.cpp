@@ -26,6 +26,7 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
        -- aai <a.aleksandrov@neroelectronics.by> Sun, 28 Sep 2016 18:34:46 +0300"), this);
 
     helpLabel = new QLabel(this);
+    helpLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
@@ -34,8 +35,8 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
     pbExit = new QPushButton(tr("Выход"),this);
 
     QGridLayout* lay = new QGridLayout(this);
-    lay->addWidget(label,  0, 0, 1, 3, Qt::AlignCenter);
-    lay->addWidget(helpLabel,  1, 0, 1, 3, Qt::AlignCenter);
+    lay->addWidget(label,  0, 0, 1, 3);
+    lay->addWidget(helpLabel,  1, 0, 1, 3);
     lay->addWidget(teChangeLog, 2, 0, 1, 3 );
     lay->addWidget(pbExit, 3, 0, 1, 1 );
     lay->addWidget(pbBack, 3, 1, 1, 1 );
@@ -62,7 +63,7 @@ void ChangelogSettingsWidget::updateWidgetsData(){
     if ( res.isEmpty() == false ){
         teChangeLog->setPlainText( res );
     }
-    QString temp = tr("Для удобства текущее время и создатель пакета:\n\t-- ");
+    QString temp = tr("Для удобства текущее время и создатель пакета(можно скопировать):\n\t-- ");
     QDateTime dt = QDateTime::currentDateTime();
     QLocale locale = QLocale(QLocale::English, QLocale::UnitedStates); // set the locale you want here
 
