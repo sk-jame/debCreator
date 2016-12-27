@@ -3,6 +3,8 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QGridLayout>
+#include "QSavedProperties.h"
+#include <QDateTime>
 
 ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) : DebSettingsCommon(workDir, parent){
     teChangeLog = new QTextEdit(this);
@@ -23,6 +25,7 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
         * Testing.\n\
        -- aai <a.aleksandrov@neroelectronics.by> Sun, 28 Sep 2016 18:34:46 +0300"), this);
 
+    helpLabel = new QLabel(this);
     label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
@@ -32,10 +35,11 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
 
     QGridLayout* lay = new QGridLayout(this);
     lay->addWidget(label,  0, 0, 1, 3, Qt::AlignCenter);
-    lay->addWidget(teChangeLog, 1, 0, 1, 3 );
-    lay->addWidget(pbExit, 2, 0, 1, 1 );
-    lay->addWidget(pbBack, 2, 1, 1, 1 );
-    lay->addWidget(pbNext, 2, 2, 1, 1 );
+    lay->addWidget(helpLabel,  1, 0, 1, 3, Qt::AlignCenter);
+    lay->addWidget(teChangeLog, 2, 0, 1, 3 );
+    lay->addWidget(pbExit, 3, 0, 1, 1 );
+    lay->addWidget(pbBack, 3, 1, 1, 1 );
+    lay->addWidget(pbNext, 3, 2, 1, 1 );
 
 
 
@@ -49,6 +53,7 @@ ChangelogSettingsWidget::~ChangelogSettingsWidget(){
     delete pbNext;
     delete pbBack;
     delete pbExit;
+    delete helpLabel;
     delete label;
 }
 
@@ -57,6 +62,14 @@ void ChangelogSettingsWidget::updateWidgetsData(){
     if ( res.isEmpty() == false ){
         teChangeLog->setPlainText( res );
     }
+    QString temp = tr("Для удобства текущее время и создатель пакета:\n\t-- ");
+    QDateTime dt = QDateTime::currentDateTime();
+    QLocale locale = QLocale(QLocale::English, QLocale::UnitedStates); // set the locale you want here
+
+    temp.append( this->getMaintainer() );
+    temp.append( locale.toString(dt.date(), " ddd, dd MMM yyyy "));
+    temp.append( locale.toString(dt.time(), "hh:mm:ss +0300")); //TODO timezone
+    helpLabel->setText(temp);
 }
 
 void ChangelogSettingsWidget::saveChangesAndGoNext(){

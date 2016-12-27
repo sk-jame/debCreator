@@ -14,10 +14,10 @@
 #include "ChangelogSettingsWidget.h"
 #include "ScriptSettingsWidget.h"
 #include "CopyrightsSettingsWidget.h"
+#include "QProgrammSettings.h"
 #include <QProcess>
 
 #define VERSION "v1.0.0"
-#define SYSROOT_SAVED_PATH "sysroot/pathList"
 
 class QCompleter;
 class QScrollArea;
@@ -41,7 +41,7 @@ private:
     ChangelogSettingsWidget* changelogWidget;
     ScriptSettingsWidget* scriptWidget;
 
-    QList<DebSettingsCommon*> settingsWidgets;
+    QList<DebSettingsCommon*> debWidgets;
 
     void createLintianWidget();
     QWidget* lintianWidget;
@@ -62,6 +62,11 @@ private:
     bool testDeb;
 
     QFile md5sumFile;
+
+    void createMenu();
+    QMenuBar* mainMenubar;
+    QMenu* mainMenu;
+    QMenu* aboutMenu;
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -73,6 +78,8 @@ private slots:
     void openClicked();
     void settingsWidgetFinished(bool shouldContinue);
     void settingsWidgetGoBack();
+
+    void showSettingsWidget();
 };
 
 #endif // MAINWINDOW_H

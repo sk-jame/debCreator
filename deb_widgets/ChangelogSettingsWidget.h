@@ -16,6 +16,7 @@ class ChangelogSettingsWidget : public DebSettingsCommon
 private:
     QTextEdit* teChangeLog;
     QLabel* label;
+    QLabel* helpLabel;
     QPushButton* pbNext;
     QPushButton* pbBack;
     QPushButton *pbExit;

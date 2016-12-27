@@ -2,6 +2,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QString>
+#include "QSavedProperties.h"
 
 void ControlSettingsWidget::parseControlFile(QStringList &data, QString key, QWidget *widget){
     if ( data.isEmpty()) return;
@@ -38,6 +39,7 @@ void ControlSettingsWidget::parseControlFile(QStringList &data, QString key, QWi
         return;
     }
     else if ( key.contains("Maintainer") ){
+        this->setMaintainer(temp);
         index = temp.indexOf("<");
         if ( index == -1 ) return;
         QString name;
@@ -222,9 +224,19 @@ void ControlSettingsWidget::updateWidgetsData(){
         parseControlFile(temp, "Replaces", replaces );
         parseControlFile(temp, "Recommends", recommends );
         parseControlFile(temp, "Suggests", suggests );
-        parseControlFile(temp, "Maintainer", maintName );
+        QSettings settings;
+        if ( settings.value(SAVED_USE_MAIL).toBool()){
+            maintName->setText(settings.value(SAVED_MAINTAINER).toString());
+            maintMail->setText(settings.value(SAVED_MAIL).toString());
+            this->setMaintainer(settings.value(SAVED_MAINTAINER).toString() +
+                                " <" +
+                                settings.value(SAVED_MAIL).toString() +
+                                ">");
+        }
+        else{
+            parseControlFile(temp, "Maintainer", maintName );
+        }
         parseControlFile(temp, "Description", descriptionShort );
-
     }
 }
 

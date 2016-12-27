@@ -15,17 +15,24 @@ CONFIG += c++14
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ControlSettingsWidget.cpp \
-    DirSettingsWidget.cpp \
-    ChangelogSettingsWidget.cpp \
-    ScriptSettingsWidget.cpp \
-    DebSettingsCommon.cpp \
-    CopyrightsSettingsWidget.cpp
+    deb_widgets/ControlSettingsWidget.cpp \
+    deb_widgets/DirSettingsWidget.cpp \
+    deb_widgets/ChangelogSettingsWidget.cpp \
+    deb_widgets/ScriptSettingsWidget.cpp \
+    deb_widgets/DebSettingsCommon.cpp \
+    deb_widgets/CopyrightsSettingsWidget.cpp \
+    QProgrammSettings.cpp
 
 HEADERS  += mainwindow.h \
-    ControlSettingsWidget.h \
-    DirSettingsWidget.h \
-    ChangelogSettingsWidget.h \
-    ScriptSettingsWidget.h \
-    DebSettingsCommon.h \
-    CopyrightsSettingsWidget.h
+    deb_widgets/ControlSettingsWidget.h \
+    deb_widgets/DirSettingsWidget.h \
+    deb_widgets/ChangelogSettingsWidget.h \
+    deb_widgets/ScriptSettingsWidget.h \
+    deb_widgets/DebSettingsCommon.h \
+    deb_widgets/CopyrightsSettingsWidget.h \
+    QProgrammSettings.h \
+    QSavedProperties.h
+
+INCLUDEPATH += $$PWD/deb_widgets
+
+DEPENDPATH += $$PWD/deb_widgets

@@ -13,6 +13,7 @@ class DebSettingsCommon : public QWidget
 private:
     QFile file;
     QTextStream stream;
+    static QString maintainer;
 protected:
     static QDir workDir;
     QTextStream& openFileForSave(QString fileName, bool &ok, int access = 0);
@@ -32,6 +33,9 @@ public:
 
     virtual void updateWidgetsData();
     static void setWorkDir(const QDir &value);
+
+    static QString getMaintainer();
+    static void setMaintainer(const QString &value);
 
 signals:
     void tryGoBack();

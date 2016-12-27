@@ -3,11 +3,19 @@
 #include <QMessageBox>
 
 QDir DebSettingsCommon::workDir = QDir();
+QString DebSettingsCommon::maintainer = QString("");
 
 void DebSettingsCommon::setWorkDir(const QDir &value){
     workDir = value;
 }
 
+QString DebSettingsCommon::getMaintainer(){
+    return maintainer;
+}
+
+void DebSettingsCommon::setMaintainer(const QString &value){
+    maintainer = value;
+}
 
 /**
  * @brief DebSettingsCommon::openFile

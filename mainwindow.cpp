@@ -8,6 +8,10 @@
 #include <QCompleter>
 #include <QScrollBar>
 #include <QScrollArea>
+#include <QDesktopWidget>
+#include "QSavedProperties.h"
+#include <QMenuBar>
+#include <QMenu>
 
 void MainWindow::createLintianWidget(){
     lintianWidget = new QWidget(0);
@@ -44,14 +48,14 @@ void MainWindow::createMainWidget(){
 
     {
         QSettings set;
-        QVariant var = set.value(SYSROOT_SAVED_PATH);
+        QVariant var = set.value(SAVED_SYSROOT_PATH);
         QStringList savedPath;
         if ( var.isValid() ){
             savedPath = var.toStringList();
             lePath->setText(savedPath.last());
         }
         completer = new QCompleter(savedPath, lePath);
-        completer->setMaxVisibleItems(10);
+        completer->setMaxVisibleItems(set.value(SAVED_SYSROOT_SHOW_CNT).toUInt());
         completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         lePath->setCompleter(completer);
@@ -87,6 +91,9 @@ void MainWindow::createMainWidget(){
     connect( startWidget, SIGNAL(destroyed()),
              mainLay,     SLOT(deleteLater()));
 
+    QRect scr = QApplication::desktop()->screenGeometry(0);
+    this->move( scr.center() - this->rect().center() );
+
 }
 
 inline void MainWindow::checkInstalledSoft(QString softName){
@@ -98,8 +105,20 @@ inline void MainWindow::checkInstalledSoft(QString softName){
     }
 }
 
+void MainWindow::createMenu(){
+    mainMenubar = new QMenuBar(this);
+    this->setMenuBar(mainMenubar);
+    mainMenu = new QMenu(tr("Общее"), mainMenubar);
+    //aboutMenu = new QMenu(tr("Справка"), mainMenubar);
+    mainMenu->addAction(tr("Настройки"), this, SLOT(showSettingsWidget()));
+    mainMenu->addSeparator();
+    mainMenu->addAction(tr("Выход"), this, SLOT(close()));
+    mainMenubar->addMenu(mainMenu);
+}
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     this->setWindowTitle(QString("debCreator ") + QString(VERSION));
+    createMenu();
     createMainWidget();
     createLintianWidget();
 
@@ -107,35 +126,35 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         switch (i) {
         case DebSettingsCommon::eControlWidget:{
             ControlSettingsWidget* widget = new ControlSettingsWidget();
-            settingsWidgets << widget;
+            debWidgets << widget;
             connect(widget, SIGNAL(someData(QString,QString,QString)),
                     this,   SLOT(createFileName(QString,QString,QString)));
             }
             break;
         case DebSettingsCommon::eChangeLogWidget:{
             ChangelogSettingsWidget* widget = new ChangelogSettingsWidget();
-            settingsWidgets << widget;
+            debWidgets << widget;
             }
             break;
         case DebSettingsCommon::eDirWidget:{
             DirSettingsWidget* widget = new DirSettingsWidget();
-            settingsWidgets << widget;
+            debWidgets << widget;
             }
             break;
         case DebSettingsCommon::eScriptWidget:{
             ScriptSettingsWidget* widget = new ScriptSettingsWidget();
-            settingsWidgets << widget;
+            debWidgets << widget;
             }
             break;
         case DebSettingsCommon::eCopyrightWidget:{
             CopyrightsSettingsWidget* widget = new CopyrightsSettingsWidget();
-            settingsWidgets << widget;
+            debWidgets << widget;
             }
             break;
         }
-        connect( settingsWidgets.last(), SIGNAL(finished(bool)),
+        connect( debWidgets.last(), SIGNAL(finished(bool)),
                  this, SLOT(settingsWidgetFinished(bool)));
-        connect( settingsWidgets.last(), SIGNAL(tryGoBack()),
+        connect( debWidgets.last(), SIGNAL(tryGoBack()),
                  this, SLOT(settingsWidgetGoBack()));
     }
 
@@ -152,8 +171,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 }
 
 MainWindow::~MainWindow(){
-    while(settingsWidgets.count()){
-        delete settingsWidgets.takeLast();
+    while(debWidgets.count()){
+        delete debWidgets.takeLast();
     }
     delete lePath;
     delete label;
@@ -250,18 +269,21 @@ void MainWindow::okOpenClicked(){
     {
         /*  add path to saved sysroots  */
         QSettings set;
-        QVariant var = set.value(SYSROOT_SAVED_PATH);
+        QVariant var = set.value(SAVED_SYSROOT_PATH);
         QStringList savedPath;
+
         if ( var.isValid() ) savedPath = var.toStringList();
-        savedPath.push_back(lePath->text());
-        set.setValue(SYSROOT_SAVED_PATH, savedPath );
+        if ( !savedPath.contains(lePath->text())){
+            savedPath.push_back(lePath->text());
+            set.setValue(SAVED_SYSROOT_PATH, savedPath );
+        }
     }
     startWidget->hide();
     startWidget->setParent(0);
-    settingsWidgets.first()->setWorkDir(workDir);
-    settingsWidgets.first()->updateWidgetsData();
-    settingsWidgets.first()->setParent(this);
-    this->setCentralWidget(settingsWidgets.first());
+    debWidgets.first()->setWorkDir(workDir);
+    debWidgets.first()->updateWidgetsData();
+    debWidgets.first()->setParent(this);
+    this->setCentralWidget(debWidgets.first());
 }
 
 /**
@@ -270,9 +292,11 @@ void MainWindow::okOpenClicked(){
  */
 void MainWindow::openClicked(){
     QString selected;
-    if (!lePath->text().isEmpty()) selected = lePath->text();
+    if (!lePath->text().isEmpty())
+        selected = lePath->text();
     QString path = QFileDialog::getExistingDirectory(this, "Выберете папку содержащую sysroot", selected);
-    if ( path.isEmpty() ) return;
+    if (path.isEmpty())
+        return;
     lePath->setText(path);
 }
 
@@ -289,13 +313,13 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         return;
     }
     debWidget->setParent(0);//now it is saved
-    int index = settingsWidgets.indexOf(debWidget);
+    int index = debWidgets.indexOf(debWidget);
     // если дальше есть ещё виджеты - показываем их
     if ( ++index < DebSettingsCommon::eEndOfWidgets ){
-        settingsWidgets.at(index)->show();
-        settingsWidgets.at(index)->updateWidgetsData();
-        settingsWidgets.at(index)->setParent( this );
-        this->setCentralWidget(settingsWidgets.at(index));
+        debWidgets.at(index)->show();
+        debWidgets.at(index)->updateWidgetsData();
+        debWidgets.at(index)->setParent( this );
+        this->setCentralWidget(debWidgets.at(index));
         return;
     }
     // создаём deb архив
@@ -351,9 +375,16 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         return;
     }
     // !fakeroot
-	process->execute("mv " + workDir.absolutePath() + ".deb " + workDir.absolutePath() + "/../" + resultFileName);
-
-	workDir.cdUp();
+    QSettings settings;
+    if (settings.value(SAVED_USE_DEB_PATH).toBool()){
+        QString tempPath = settings.value(SAVED_DEB_PATH).toString();
+        process->execute("mv " + workDir.absolutePath() + ".deb " + tempPath + "/" + resultFileName);
+        workDir.setPath(tempPath);
+    }
+    else{
+        process->execute("mv " + workDir.absolutePath() + ".deb " + workDir.absolutePath() + "/../" + resultFileName);
+        workDir.cdUp();
+    }
 
 	if ( !QFile::exists(workDir.absolutePath() + "/" + resultFileName)){
         QMessageBox::critical(this, tr("Ошибка создания пакета"),
@@ -382,7 +413,7 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
 
 void MainWindow::settingsWidgetGoBack(){
     DebSettingsCommon* debWidget = qobject_cast<DebSettingsCommon*>(sender());
-    int index = settingsWidgets.indexOf( debWidget );
+    int index = debWidgets.indexOf( debWidget );
     debWidget->setParent(0);//now it is saved
     debWidget->hide();
     if ( --index == -1 ){
@@ -391,9 +422,14 @@ void MainWindow::settingsWidgetGoBack(){
         this->setCentralWidget( startWidget );
     }
     else{
-        settingsWidgets.at(index)->show();
-        settingsWidgets.at(index)->updateWidgetsData();
-        settingsWidgets.at(index)->setParent( this );
-        this->setCentralWidget(settingsWidgets.at(index));
+        debWidgets.at(index)->show();
+        debWidgets.at(index)->updateWidgetsData();
+        debWidgets.at(index)->setParent( this );
+        this->setCentralWidget(debWidgets.at(index));
     }
+}
+
+void MainWindow::showSettingsWidget(){
+    QProgrammSettings progset(this);
+    progset.exec();
 }
