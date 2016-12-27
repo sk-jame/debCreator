@@ -49,7 +49,7 @@ private:
 
 
     QPushButton* pbNext;
-    QPushButton* pbBack;
+//    QPushButton* pbBack;
     QPushButton *pbExit;
 
     void parseControlFile(QStringList &data, const QString key, QWidget* leForSave );

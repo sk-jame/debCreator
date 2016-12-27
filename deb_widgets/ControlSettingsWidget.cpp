@@ -101,8 +101,8 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
     pbExit = new QPushButton(tr("Выход"),this);
-    pbBack = new QPushButton(tr("Назад"),this);
-    pbBack->setShortcut(QKeySequence("ALT+B"));
+//    pbBack = new QPushButton(tr("Назад"),this);
+//    pbBack->setShortcut(QKeySequence("ALT+B"));
 
     const int descrLongRowCnt = 3;
     int layRow = 0;
@@ -138,8 +138,8 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
     lay->addWidget(descriptionLong,  layRow++, 1, 3, 3 );
 
 
-    lay->addWidget(pbExit, layRow + descrLongRowCnt, 1, 1, 1);
-    lay->addWidget(pbBack, layRow + descrLongRowCnt, 2, 1, 1);
+    lay->addWidget(pbExit, layRow + descrLongRowCnt, 2, 1, 1);
+//    lay->addWidget(pbBack, layRow + descrLongRowCnt, 2, 1, 1);
     lay->addWidget(pbNext, layRow + descrLongRowCnt, 3, 1, 1);
 
     // настройка комбо боксов
@@ -164,7 +164,7 @@ ControlSettingsWidget::ControlSettingsWidget(QDir workDir, QWidget *parent) : De
 
 
 
-    connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
+//    connect( pbBack, SIGNAL(clicked()), this, SIGNAL(tryGoBack()));
 
 
     connect( pbNext, SIGNAL(clicked()), this, SLOT(saveChangesAndGoNext()));
@@ -206,7 +206,7 @@ ControlSettingsWidget::~ControlSettingsWidget(){
     delete lDescrLong;
 
     delete pbNext;
-    delete pbBack;
+//    delete pbBack;
     delete pbExit;
 }
 
