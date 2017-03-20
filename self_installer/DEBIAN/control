@@ -1,0 +1,10 @@
+Package: debcreator
+Version: 1.0.0-1
+Section: admin
+Architecture: amd64
+Depends: bash, ldconfig, libc
+Maintainer: Alexandrov Alexandr <sk.jame9@gmail.com>
+Suggests: 
+Description: simple installer
+ It will be also install qt5.
+ 7 libs in /usr/lib/qt/.

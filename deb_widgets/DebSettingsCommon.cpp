@@ -4,6 +4,9 @@
 
 QDir DebSettingsCommon::workDir = QDir();
 QString DebSettingsCommon::maintainer = QString("");
+QString DebSettingsCommon::packageName = QString("");
+QString DebSettingsCommon::version = QString("");
+
 
 void DebSettingsCommon::setWorkDir(const QDir &value){
     workDir = value;
@@ -15,6 +18,22 @@ QString DebSettingsCommon::getMaintainer(){
 
 void DebSettingsCommon::setMaintainer(const QString &value){
     maintainer = value;
+}
+
+QString DebSettingsCommon::getPackageName(){
+    return packageName;
+}
+
+void DebSettingsCommon::setPackageName(const QString &value){
+    packageName = value;
+}
+
+QString DebSettingsCommon::getVersion(){
+    return version;
+}
+
+void DebSettingsCommon::setVersion(const QString &value){
+    version = value;
 }
 
 /**

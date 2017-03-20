@@ -17,22 +17,25 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     deb_widgets/ControlSettingsWidget.cpp \
     deb_widgets/DirSettingsWidget.cpp \
-    deb_widgets/ChangelogSettingsWidget.cpp \
     deb_widgets/ScriptSettingsWidget.cpp \
     deb_widgets/DebSettingsCommon.cpp \
     deb_widgets/CopyrightsSettingsWidget.cpp \
-    QProgrammSettings.cpp
+    QProgrammSettings.cpp \
+    deb_widgets/changelogsettingswidget.cpp
 
 HEADERS  += mainwindow.h \
     deb_widgets/ControlSettingsWidget.h \
     deb_widgets/DirSettingsWidget.h \
-    deb_widgets/ChangelogSettingsWidget.h \
     deb_widgets/ScriptSettingsWidget.h \
     deb_widgets/DebSettingsCommon.h \
     deb_widgets/CopyrightsSettingsWidget.h \
     QProgrammSettings.h \
-    QSavedProperties.h
+    QSavedProperties.h \
+    deb_widgets/changelogsettingswidget.h
 
 INCLUDEPATH += $$PWD/deb_widgets
 
 DEPENDPATH += $$PWD/deb_widgets
+
+FORMS += \
+    deb_widgets/changelogsettingswidget.ui

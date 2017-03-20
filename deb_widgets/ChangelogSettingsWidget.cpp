@@ -7,37 +7,43 @@
 #include <QDateTime>
 
 ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) : DebSettingsCommon(workDir, parent){
-    teChangeLog = new QTextEdit(this);
-    label = new QLabel(tr(
-"Заполните текст изменений.\nФормат записи:\n\
-    package (version) distribution(s); urgency=urgency\n\
-            [optional blank line(s), stripped]\n\
-        * change details\n\
-        more change details\n\
-            [blank line(s), included in output of dpkg-parsechangelog]\n\
-        * even more change details\n\
-            [optional blank line(s), stripped]\n\
-       -- maintainer name <email address>[two spaces]  date\n\
-Формат даты:\n\
-    day-of-week, dd month yyyy hh:mm:ss +zzzz\n\
-Пример:\n\
-    supersh (1.0-1) stable; urgency=medium\n\
-        * Testing.\n\
-       -- aai <a.aleksandrov@neroelectronics.by> Sun, 28 Sep 2016 18:34:46 +0300"), this);
+    teNewChanges = new QTextEdit(this);
+    teOldChanges = new QTextEdit(this);
+    label = new QLabel(tr("Введите список новых изменений."
+                          "\nКаждое изменение должно быть с новой строки."
+                          "\nЕсли дле перечислений нужно использовать +."
+                          "\nК примеру:\n"
+                          "* Changes prompted by lintian:\n"
+                          "+ debian/copyright: move license grants into Comment sections\n"
+                          "+ Bump build dependency on dpkg-dev to 1.17.14 for build profile support"
+                            "(Closes: #813811)\n"
+                          "+ Call ldconfig in libperl5.22 postrm script.\n"
+                          "+ Override lintian warning about file conflict over /usr/bin/perldoc.\n"
+                          "+ Install manual pages for perl5.22-<arch> and cpan5.22-<arch>.\n"
+                          "+ Fix POD errors in Memoize, Encode-Unicode and ok.\n"), this);
 
-    helpLabel = new QLabel(this);
-    helpLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    cbUrgency = new QComboBox(this);
+    QStringList items;
+    items << "low" << "medium" << "high" << "emergency" << "critical";
+    cbUrgency->addItems(items);
+    urgencyLabel = new QLabel(tr("Необходимость:"), this);
+
+    cbDistribution = new QComboBox(this);
+    items.clear();
+    items << "stable" << "unstable" << "experimental";
+    cbDistribution->addItems(items);
+    distributionLabel = new QLabel(tr("Распространение:"), this);
+
     pbNext = new QPushButton(tr("Дальше"),this);
     pbNext->setShortcut(QKeySequence("ALT+N"));
     pbBack = new QPushButton(tr("Назад"),this);
     pbBack->setShortcut(QKeySequence("ALT+B"));
     pbExit = new QPushButton(tr("Выход"),this);
 
+
     QGridLayout* lay = new QGridLayout(this);
-    lay->addWidget(label,  0, 0, 1, 3);
-    lay->addWidget(helpLabel,  1, 0, 1, 3);
-    lay->addWidget(teChangeLog, 2, 0, 1, 3 );
+    lay->addWidget(cbUrgency,  0, 0, 1, 3);
+    lay->addWidget(teOldChanges, 2, 0, 1, 3 );
     lay->addWidget(pbExit, 3, 0, 1, 1 );
     lay->addWidget(pbBack, 3, 1, 1, 1 );
     lay->addWidget(pbNext, 3, 2, 1, 1 );
@@ -50,18 +56,18 @@ ChangelogSettingsWidget::ChangelogSettingsWidget(QDir workDir, QWidget *parent) 
 }
 
 ChangelogSettingsWidget::~ChangelogSettingsWidget(){
-    delete teChangeLog;
+    delete teOldChanges;
     delete pbNext;
     delete pbBack;
     delete pbExit;
-    delete helpLabel;
+    //delete helpLabel;
     delete label;
 }
 
 void ChangelogSettingsWidget::updateWidgetsData(){
     QString res = this->tryToReadDataFromFile("changelog");
     if ( res.isEmpty() == false ){
-        teChangeLog->setPlainText( res );
+        teOldChanges->setPlainText( res );
     }
     QString temp = tr("Для удобства текущее время и создатель пакета(можно скопировать):\n\t-- ");
     QDateTime dt = QDateTime::currentDateTime();
@@ -70,14 +76,14 @@ void ChangelogSettingsWidget::updateWidgetsData(){
     temp.append( this->getMaintainer() );
     temp.append( locale.toString(dt.date(), " ddd, dd MMM yyyy "));
     temp.append( locale.toString(dt.time(), "hh:mm:ss +0300")); //TODO timezone
-    helpLabel->setText(temp);
+//    helpLabel->setText(temp);
 }
 
 void ChangelogSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFileForSave("changelog", ok, 644);
+    QTextStream& stream = openFileForSave("changelog", ok, 755);
     if ( ok == false ) return;
-    stream << teChangeLog->toPlainText();
+    stream << teOldChanges->toPlainText();
     closeFile();
     emit finished(true);
 }

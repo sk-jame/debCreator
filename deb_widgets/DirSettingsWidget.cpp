@@ -45,7 +45,7 @@ void DirSettingsWidget::updateWidgetsData(){
 
 void DirSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = openFileForSave("dirs", ok, 644);
+    QTextStream& stream = openFileForSave("dirs", ok, 755);
     if ( ok == false ) return;
 
     stream << teDirs->toPlainText();

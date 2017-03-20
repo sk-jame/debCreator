@@ -320,6 +320,11 @@ void MainWindow::settingsWidgetFinished(bool shouldContinue){
         debWidgets.at(index)->updateWidgetsData();
         debWidgets.at(index)->setParent( this );
         this->setCentralWidget(debWidgets.at(index));
+        QRect rect = debWidgets.at(index)->geometry();
+        this->setGeometry(this->geometry().topLeft().x(),
+                          this->geometry().topLeft().y(),
+                          rect.width(),
+                          rect.height());
         return;
     }
     // создаём deb архив

@@ -1,0 +1,5 @@
+#/bin/bash
+
+echo "/usr/lib/qt" >> /etc/ld.so.conf.d/libc.conf && ldconfig;
+
+exit 0

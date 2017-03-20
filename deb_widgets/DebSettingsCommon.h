@@ -14,6 +14,8 @@ private:
     QFile file;
     QTextStream stream;
     static QString maintainer;
+    static QString packageName;
+    static QString version;
 protected:
     static QDir workDir;
     QTextStream& openFileForSave(QString fileName, bool &ok, int access = 0);
@@ -36,6 +38,12 @@ public:
 
     static QString getMaintainer();
     static void setMaintainer(const QString &value);
+
+    static QString getPackageName();
+    static void setPackageName(const QString &value);
+
+    static QString getVersion();
+    static void setVersion(const QString &value);
 
 signals:
     void tryGoBack();

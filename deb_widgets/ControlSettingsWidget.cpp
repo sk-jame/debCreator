@@ -242,7 +242,7 @@ void ControlSettingsWidget::updateWidgetsData(){
 
 void ControlSettingsWidget::saveChangesAndGoNext(){
     bool ok;
-    QTextStream& stream = this->openFileForSave("control", ok, 644);
+    QTextStream& stream = this->openFileForSave("control", ok, 755);
 
     if ( ok == false ) return;
 
@@ -267,6 +267,7 @@ void ControlSettingsWidget::saveChangesAndGoNext(){
     }
     closeFile();
     emit someData(packName->text(), version->text(), arch->currentText());
-
+    this->setPackageName(packName->text());
+    this->setVersion(version->text());
     emit finished(true);
 }

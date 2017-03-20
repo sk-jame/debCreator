@@ -7,6 +7,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QLabel>
+#include <QComboBox>
 
 #include "DebSettingsCommon.h"
 
@@ -14,9 +15,15 @@ class ChangelogSettingsWidget : public DebSettingsCommon
 {
     Q_OBJECT
 private:
-    QTextEdit* teChangeLog;
+    QComboBox* cbUrgency;
+    QLabel* urgencyLabel;
+    QComboBox* cbDistribution;
+    QLabel* distributionLabel;
+    QTextEdit* teNewChanges;
+
+
+    QTextEdit* teOldChanges;
     QLabel* label;
-    QLabel* helpLabel;
     QPushButton* pbNext;
     QPushButton* pbBack;
     QPushButton *pbExit;

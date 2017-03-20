@@ -123,17 +123,14 @@ void ScriptSettingsWidget::saveChangesAndGoNext(){
 			} else if (str->lePath->text() == fileName) {
 				target = QString( workDir.absolutePath() + "/DEBIAN/" + fileName );
 			}
-			if (
-				(target != str->lePath->text())
-				 &&
-				(fileName != str->lePath->text())
+            if ((target != str->lePath->text()) && (fileName != str->lePath->text())
 				 ){
                 if ( QFile::exists(target) ){
                     QFile::remove(target);
                 }
                 QFile::copy(str->lePath->text(), target);
-                QProcess::execute("chmod 755 " + target);
             }
+            QProcess::execute("chmod 755 " + target);
         }
     }
 
