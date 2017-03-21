@@ -17,7 +17,7 @@
 #include "QProgrammSettings.h"
 #include <QProcess>
 
-#define VERSION "v1.0.0"
+#define VERSION "v1.0.1"
 
 class QCompleter;
 class QScrollArea;
