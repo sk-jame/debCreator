@@ -82,7 +82,11 @@ void ChangelogSettingsWidget::saveChangesAndGoNext(){
     if (!QProcess::execute("cp " + workDir.absoluteFilePath("changelog") +
                            " " + root.absolutePath()+ "/changelog.Debian")){
 
-        QProcess::execute("yes| gzip --best " + root.absolutePath()+ "/changelog.Debian");
+        QFile tmp(root.absoluteFilePath("/changelog.Debian.gz"));
+        if (tmp.exists()){
+            QProcess::execute("rm " + root.absolutePath()+ "/changelog.Debian.gz");
+        }
+        QProcess::execute("gzip --best " + root.absolutePath()+ "/changelog.Debian");
     }
 
     emit finished(true);
