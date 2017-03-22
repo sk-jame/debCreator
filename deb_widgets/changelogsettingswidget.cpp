@@ -79,14 +79,18 @@ void ChangelogSettingsWidget::saveChangesAndGoNext(){
         root.cd(this->getPackageName());
     }
 
-    if (!QProcess::execute("cp " + workDir.absoluteFilePath("changelog") +
+    QProcess proc;
+    if (!proc.execute("cp " + workDir.absoluteFilePath("changelog") +
                            " " + root.absolutePath()+ "/changelog.Debian")){
 
-        QFile tmp(root.absoluteFilePath("/changelog.Debian.gz"));
-        if (tmp.exists()){
-            QProcess::execute("rm " + root.absolutePath()+ "/changelog.Debian.gz");
-        }
+        proc.waitForStarted();
+        proc.waitForFinished();
+        QProcess::execute("rm " + root.absolutePath()+ "/changelog.Debian.gz");
+        proc.waitForStarted();
+        proc.waitForFinished();
         QProcess::execute("gzip --best " + root.absolutePath()+ "/changelog.Debian");
+        proc.waitForStarted();
+        proc.waitForFinished();
     }
 
     emit finished(true);
@@ -114,15 +118,14 @@ QString ChangelogSettingsWidget::getChangeLogFromText(){
         result+=str+"\n";
     }
 
-    result.append("\n");
 
-    result.append(" -- ");
+    result.append("\n -- ");
 
     QDateTime dt = QDateTime::currentDateTime();
     QLocale locale = QLocale(QLocale::English, QLocale::UnitedStates); // set the locale you want here
 
     result.append( this->getMaintainer() );
-    result.append( locale.toString(dt.date(), " ddd, dd MMM yyyy "));
+    result.append( locale.toString(dt.date(), "  ddd, dd MMM yyyy "));
     result.append( locale.toString(dt.time(), "hh:mm:ss +0300")); //TODO timezone
     result.append("\n\n");
     ui->tePrevision->setPlainText(result);
@@ -140,12 +143,9 @@ void ChangelogSettingsWidget::on_cbDestrib_currentTextChanged(){
 void ChangelogSettingsWidget::on_pbBack_clicked(){
     emit tryGoBack();
 }
-#include <QDebug>
+
 void ChangelogSettingsWidget::on_pbNext_clicked(){
     saveChangesAndGoNext();
-
-
-
 }
 
 class OldChangeLogDialog : public QDialog{
