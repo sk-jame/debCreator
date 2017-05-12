@@ -43,9 +43,9 @@ void ChangelogSettingsWidget::updateWidgetsData(){
 void ChangelogSettingsWidget::saveChangesAndGoNext(){
 
     QString res = this->tryToReadDataFromFile("changelog");
-    if (res.isEmpty()){
-        return;
-    }
+//    if (res.isEmpty()){
+//        return;
+//    }
 
     bool ok;
     QTextStream& stream = openFileForSave("changelog", ok, 755);
